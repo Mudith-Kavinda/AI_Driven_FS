@@ -5,7 +5,6 @@ import "../index.css";
 function RootLayout() {
   return (
     <main className="container">
-      <Navigation />
       <Outlet />
     </main>
   );

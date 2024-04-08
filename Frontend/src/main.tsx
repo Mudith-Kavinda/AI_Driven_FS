@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
+import MainLayout from "./layout/main.layout.tsx";
 import RootLayout from "./layout/root.layout.tsx";
 
 import HomePage from "./pages/home/home.page.tsx";
@@ -14,7 +15,13 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <HomePage />,
+        element: <MainLayout />,
+        children: [
+          {
+            path: "/home",
+            element: <HomePage />,
+          },
+        ],
       },
       {
         path: "/sign-in",
