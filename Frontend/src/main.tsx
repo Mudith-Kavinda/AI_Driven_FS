@@ -8,6 +8,7 @@ import RootLayout from "./layout/root.layout.tsx";
 import HomePage from "./pages/home/home.page.tsx";
 import SignInPage from "./pages/sign-in.page.tsx";
 import SignUpPage from "./pages/sign-up.page.tsx";
+import JobPage from "./pages/job/job.page.tsx";
 
 const router = createBrowserRouter([
   {
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
           {
             path: "/home",
             element: <HomePage />,
+          },
+          {
+            path: "/job/:id",
+            element: <JobPage />,
           },
         ],
       },
