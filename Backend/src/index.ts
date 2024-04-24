@@ -1,4 +1,5 @@
 import express from "express";
+import "dotenv/config"
 import jobsRouter from "./api/jobs";
 import { connectDB } from "./persistence/db";
 
