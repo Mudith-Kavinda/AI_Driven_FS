@@ -16,7 +16,7 @@ export const createJob = async (req : Request, res : Response) => {
         console.log(job);
         await Job.create(job);
 
-        return res.status(200).send();
+        return res.status(201).send();
     } catch (error) {
         return res.status(500).send();
     }
