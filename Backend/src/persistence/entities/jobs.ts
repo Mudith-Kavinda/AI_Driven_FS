@@ -5,19 +5,19 @@ const jobSchema = new mongoose.Schema({
         type: String,
         required: true,
       },
-      description: {
+    description: {
         type: String,
         required: true,
       },
-      type: {
+    type: {
         type: String,
         required: true,
       },
-      location: {
+    location: {
         type: String,
         required: true,
       },
-      questions: {
+    questions: {
         type: [String],
         default: [
           "Share your academic background and highlight key programming concepts you've mastered. How has your education shaped your current tech skill set ?",

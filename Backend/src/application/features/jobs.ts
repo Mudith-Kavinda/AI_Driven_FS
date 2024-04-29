@@ -1,47 +1,58 @@
 import { NextFunction, Request, Response } from "express";
-const jobs = [
-    {
-      _id: "xyz",
-      title: "Intern - Software Engineer",
-      type: "Full-time",
-      location: "Remote",
-    },
-    {
-      _id: "abc",
-      title: "Software Engineer",
-      type: "Full-time",
-      location: "Remote",
-    },
-  ];
+import Job from "../../persistence/entities/Jobs";
 
-export const getJobs = async (req : Request, res : Response) => { //function name = what we want to do eg. get jobs
+export const getJobs = async (req : Request, res : Response) => { 
     try {
-        // const jobs = await Job.find().select("title type location")
+        const jobs = await Job.find();
         return res.status(200).json(jobs);
     } catch (error) {
         return res.status(500).send();
     }
 };
 
-export const createJob = async (req : Request, res : Response) => { //function name = what we want to do eg. get jobs
+export const createJob = async (req : Request, res : Response) => { 
     try {
+        const job = req.body;
+        console.log(job);
+        await Job.create(job);
 
-        // const jobs = await Job.find().select("title type location")
-        console.log(req.body);
-        jobs.push(req.body)
-        return res.status(200).json(jobs);
+        return res.status(200).send();
     } catch (error) {
         return res.status(500).send();
     }
 };
 
-export const getOneJob = async (req : Request, res : Response) => { //function name = what we want to do eg. get jobs
+export const getOneJob = async (req : Request, res : Response) => { 
     try {
-        console.log(req.params.id);
         const id = req.params.id;
-        let job = jobs.filter(item => item._id == id);
+        console.log(id);
+        const job =  await Job.findById(id);
+
         return res.status(200).json(job);
     } catch (error) {
         return res.status(500).send();
     }
 };
+
+export const updateJob = async (req : Request, res : Response) => { 
+    try {
+        const id = req.params.id;
+        const job = await Job.findByIdAndUpdate(id, req.body)
+
+        return res.status(200).send();
+    } catch (error) {
+        return res.status(500).send();
+    }
+};
+
+export const deleteOneJob = async (req : Request, res : Response) => { 
+    try {
+        const id = req.params.id;
+        const job = await Job.findByIdAndDelete(id)
+
+        return res.status(200).send();
+    } catch (error) {
+        return res.status(500).send();
+    }
+};
+
