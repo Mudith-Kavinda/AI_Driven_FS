@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
 import JobApplication from "../../persistence/entities/JobApplication";
-import Job from "../../persistence/entities/Jobs";
 
 export const createJobApplicaton = async (req:Request, res:Response, next:NextFunction) => {
     try {

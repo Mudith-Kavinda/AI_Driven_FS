@@ -1,5 +1,6 @@
 import express from "express";
 import "dotenv/config"
+import cors from "cors";
 import jobsRouter from "./api/jobs";
 import jobApplicationRouter from "./api/jobApplication";
 import { connectDB } from "./persistence/db";
@@ -9,8 +10,9 @@ const app = express();
 connectDB();
 
 app.use(express.json());
-app.use("/jobs", jobsRouter)
-app.use("/jobApplications", jobApplicationRouter)
+app.use(cors());
+app.use("/jobs", jobsRouter);
+app.use("/jobApplications", jobApplicationRouter);
 
 
 app.listen(port, () => console.log(`Server is listening on port ${port}.`));

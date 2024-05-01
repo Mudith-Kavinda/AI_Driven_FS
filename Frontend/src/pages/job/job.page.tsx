@@ -5,20 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Briefcase, MapPin } from "lucide-react";
+import { Job } from "@/types/job";
 
 function JobPage() {
-  const job = {
-    title: "Intern - Software Engineer",
-    description:
-      "We are seeking a motivated and enthusiastic Software Engineering Intern to join our dynamic team. As a Software Engineering Intern, you will have the opportunity to work closely with experienced developers and contribute to real-world projects. This internship is designed to provide valuable hands-on experience, foster professional growth, and enhance your technical skills.",
-    type: "Full-time",
-    location: "Remote",
-    questions: [
-      "Share your academic background and highlight key programming concepts you've mastered. How has your education shaped your current tech skill set ?",
-      "Describe your professional development, emphasizing any certifications obtained. How have these certifications enriched your technical abilities, and can you provide an example of their practical application ?",
-      "Discuss notable projects in your programming experience. What challenges did you face, and how did you apply your skills to overcome them? Highlight the technologies used and the impact of these projects on your overall growth as a prefessional ?",
-    ],
-  };
+  const [job, setJob] = React.useState<Job | null>(null);
+  const [isLoading, setIsLoading] = React.useState(true);
 
   const { id } = useParams();
   console.log(id); //Gives us the value of the route param.
@@ -30,9 +21,25 @@ function JobPage() {
     a3: "",
   });
 
+  React.useEffect(() => {
+    const fetchJob = async () => {
+      const res = await fetch(`http://localhost:8000/jobs/${id}`, {
+        method: "GET",
+      });
+      const data: Job = await res.json();
+      return data;
+    };
+    fetchJob().then((data) => {
+      setJob(data);
+      setIsLoading(false);
+    });
+  }, [id]);
+
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
+    // console.log(event.target.name);
+    // console.log(event.target.value);
     setFormData({ ...formData, [event.target.name]: event.target.value }); //Controlled Component Pattern
   };
 
@@ -40,6 +47,14 @@ function JobPage() {
     event.preventDefault();
     console.log(formData);
   };
+
+  if (isLoading || job === null) {
+    return (
+      <div>
+        <h1>Loading...</h1>
+      </div>
+    );
+  }
 
   return (
     <div>
