@@ -1,29 +1,44 @@
 import { Separator } from "@/components/ui/separator";
 import { Briefcase, MapPin } from "lucide-react";
 import JobApplicationCard from "./components/JobApplicationCard";
+import { useParams } from "react-router-dom";
+import React from "react";
+import { Job } from "@/types/job";
+import { JobApplication } from "@/types/jobApplication";
 
 function JobPage() {
-  const job = {
-    _id: "xyz",
-    title: "Intern - Software Engineer",
-    description:
-      "We are seeking a motivated and enthusiastic Software Engineering Intern to join our dynamic team. As a Software Engineering Intern, you will have the opportunity to work closely with experienced developers and contribute to real-world projects. This internship is designed to provide valuable hands-on experience, foster professional growth, and enhance your technical skills.",
-    type: "Full-time",
-    location: "Remote",
-    questions: [
-      "Share your academic background and highlight key programming concepts you've mastered. How has your education shaped your current tech skill set ?",
-      "Describe your professional development, emphasizing any certifications obtained. How have these certifications enriched your technical abilities, and can you provide an example of their practical application ?",
-      "Discuss notable projects in your programming experience. What challenges did you face, and how did you apply your skills to overcome them? Highlight the technologies used and the impact of these projects on your overall growth as a prefessional ?",
-    ],
-  };
+  const { id } = useParams();
+  const [job, setJob] = React.useState<Job | null>(null);
+  const [jobApplications, setJobApplications] = React.useState<
+    JobApplication[]
+  >([]);
 
-  const jobApplications = [
-    {
-      _id: "1",
-      fullName: "Manupa Samarawickrama",
-      jobId: "xyz",
-    },
-  ];
+  React.useEffect(() => {
+    const fetchData = async () => {
+      const res = await fetch(`http://localhost:8000/jobs/${id}`, {
+        method: "GET",
+      });
+      const data: Job = await res.json();
+      return data;
+    };
+    fetchData().then((data) => setJob(data));
+  }, [id]);
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      const res = await fetch("http://localhost:8000/jobApplications/", {
+        method: "GET",
+      });
+      const data: JobApplication[] = await res.json();
+      return data;
+    };
+    fetchData().then((data) => {
+      const relevantApplications = data.filter(
+        (application) => application.job._id == id
+      );
+      setJobApplications(relevantApplications);
+    });
+  }, [id]);
 
   return (
     <div>
@@ -57,7 +72,7 @@ function JobPage() {
               key={application._id}
               fullName={application.fullName}
               _id={application._id}
-              jobId={application.jobId}
+              jobId={application.job._id}
             />
           ))}
         </div>

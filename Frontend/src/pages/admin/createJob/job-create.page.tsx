@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ChangeEvent, FormEvent, useState } from "react";
+import React, { ChangeEvent, FormEvent } from "react";
 
 function JobCreatePage() {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = React.useState({
     title: "",
     description: "",
     type: "",
@@ -20,9 +20,20 @@ function JobCreatePage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log(formData);
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    // e.preventDefault();
+    const res = await fetch("http://localhost:8000/jobs/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: formData.title,
+        description: formData.description,
+        type: formData.location,
+        location: formData.location,
+        questions: [formData.q1, formData.q2, formData.q3],
+      }),
+    });
+    console.log(res);
   };
 
   return (
