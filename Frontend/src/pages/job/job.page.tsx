@@ -11,8 +11,8 @@ function JobPage() {
   const [job, setJob] = React.useState<Job | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
 
-  const { id } = useParams();
-  console.log(id); //Gives us the value of the route param.
+  const { id } = useParams(); //Gives us the value of the route param.
+  //console.log(id);
 
   const [formData, setFormData] = React.useState({
     fullName: "",
@@ -43,9 +43,22 @@ function JobPage() {
     setFormData({ ...formData, [event.target.name]: event.target.value }); //Controlled Component Pattern
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     console.log(formData);
+    const res = await fetch("http://localhost:8000/jobApplications", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: "Kavinda",
+        fullName: formData.fullName,
+        job: id,
+        answers: [formData.a1, formData.a2, formData.a3],
+      }),
+    });
+    console.log(res);
   };
 
   if (isLoading || job === null) {
