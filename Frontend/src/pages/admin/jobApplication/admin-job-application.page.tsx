@@ -14,6 +14,10 @@ function AdminJobApplicationPage() {
   const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
+    if (!id) {
+      return;
+    }
+
     const fetchData = async () => {
       const res = await fetch(
         `http://localhost:8000/jobApplications/${applicationId}`,
@@ -24,16 +28,19 @@ function AdminJobApplicationPage() {
       const data: JobApplication = await res.json();
       return data;
     };
-    fetchData().then((data) => setJobApplication(data));
-    setIsLoading(false);
-  }, []);
+    fetchData()
+      .then((data) => {
+        setJobApplication(data);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setIsLoading(false);
+      });
+  }, [applicationId]);
 
   if (isLoading || jobApplication === null) {
-    return (
-      <div>
-        <h1>Loading...</h1>
-      </div>
-    );
+    return null;
   }
 
   return (

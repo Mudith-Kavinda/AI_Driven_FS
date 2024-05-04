@@ -12,7 +12,9 @@ function JobPostsSection() {
       console.log(data);
       return data;
     };
-    fetchData().then((data) => setJobs(data));
+    fetchData()
+      .then((data) => setJobs(data as Job[]))
+      .catch((err) => console.log(err));
   }, []);
 
   return (

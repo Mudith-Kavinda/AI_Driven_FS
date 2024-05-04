@@ -14,30 +14,42 @@ function JobPage() {
   >([]);
 
   React.useEffect(() => {
-    const fetchData = async () => {
+    if (!id) {
+      return;
+    }
+
+    const getJobById = async () => {
       const res = await fetch(`http://localhost:8000/jobs/${id}`, {
         method: "GET",
       });
       const data: Job = await res.json();
       return data;
     };
-    fetchData().then((data) => setJob(data));
-  }, [id]);
 
-  React.useEffect(() => {
-    const fetchData = async () => {
+    const getApplicationForJob = async () => {
       const res = await fetch("http://localhost:8000/jobApplications/", {
         method: "GET",
       });
       const data: JobApplication[] = await res.json();
       return data;
     };
-    fetchData().then((data) => {
-      const relevantApplications = data.filter(
-        (application) => application.job._id == id
-      );
-      setJobApplications(relevantApplications);
-    });
+
+    getJobById()
+      .then((data) => setJob(data))
+      .catch((err) => {
+        console.log(err);
+      });
+
+    getApplicationForJob()
+      .then((data) => {
+        const relevantApplications = data.filter(
+          (application) => application.job._id == id
+        );
+        setJobApplications(relevantApplications);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }, [id]);
 
   return (
