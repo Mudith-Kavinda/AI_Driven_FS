@@ -12,6 +12,9 @@ function JobPage() {
   const [jobApplications, setJobApplications] = React.useState<
     JobApplication[]
   >([]);
+  const [isloadingJob, setIsloadingJob] = React.useState(true);
+  const [isloadingJobApplication, setIsloadingJobApplication] =
+    React.useState(true);
 
   React.useEffect(() => {
     if (!id) {
@@ -26,31 +29,39 @@ function JobPage() {
       return data;
     };
 
-    const getApplicationForJob = async () => {
-      const res = await fetch("http://localhost:8000/jobApplications/", {
-        method: "GET",
-      });
+    const getApplicationForJob = async (id: String) => {
+      const res = await fetch(
+        `http://localhost:8000/jobApplications?jobId=${id}`,
+        {
+          method: "GET",
+        }
+      );
       const data: JobApplication[] = await res.json();
       return data;
     };
 
     getJobById()
-      .then((data) => setJob(data))
+      .then((data) => {
+        setJob(data);
+        setIsloadingJob(false);
+      })
       .catch((err) => {
         console.log(err);
       });
 
-    getApplicationForJob()
+    getApplicationForJob(id)
       .then((data) => {
-        const relevantApplications = data.filter(
-          (application) => application.job._id == id
-        );
-        setJobApplications(relevantApplications);
+        setJobApplications(data);
+        setIsloadingJobApplication(false);
       })
       .catch((err) => {
         console.log(err);
       });
   }, [id]);
+
+  if (isloadingJob || isloadingJobApplication) {
+    return null;
+  }
 
   return (
     <div>
@@ -84,7 +95,7 @@ function JobPage() {
               key={application._id}
               fullName={application.fullName}
               _id={application._id}
-              jobId={application.job._id}
+              jobId={id!}
             />
           ))}
         </div>
