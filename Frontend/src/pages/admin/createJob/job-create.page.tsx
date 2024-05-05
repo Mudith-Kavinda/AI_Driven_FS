@@ -89,7 +89,9 @@ function JobCreatePage() {
             name={"q1"}
             value={formData.q1}
             onChange={handleChange}
-            required
+            defaultValue={
+              "Share your academic background and highlight key programming concepts you've mastered. How has your education shaped your current tech skill set?"
+            }
           />
         </div>
         <div className="mt-4">
@@ -99,7 +101,9 @@ function JobCreatePage() {
             name={"q2"}
             value={formData.q2}
             onChange={handleChange}
-            required
+            defaultValue={
+              "Describe your professional development, emphasizing any certifications obtained. How have these certifications enriched your technical abilities, and can you provide an example of their practical application?"
+            }
           />
         </div>
         <div className="mt-4">
@@ -109,7 +113,9 @@ function JobCreatePage() {
             name={"q3"}
             value={formData.q3}
             onChange={handleChange}
-            required
+            defaultValue={
+              "Discuss notable projects in your programming experience. What challenges did you face, and how did you apply your skills to overcome them? Highlight the technologies used and the impact of these projects on your overall growth as a prefessional?"
+            }
           />
         </div>
 

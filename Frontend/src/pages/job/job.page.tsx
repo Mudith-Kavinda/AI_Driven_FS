@@ -6,10 +6,14 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Briefcase, MapPin } from "lucide-react";
 import { Job } from "@/types/job";
+import { useUser } from "@clerk/clerk-react";
 
 function JobPage() {
   const [job, setJob] = React.useState<Job | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
+
+  const user = useUser();
+  console.log(user);
 
   const { id } = useParams(); //Gives us the value of the route param.
   //console.log(id);
@@ -52,7 +56,7 @@ function JobPage() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        userId: "Kavinda",
+        userId: user.user?.id,
         fullName: formData.fullName,
         job: id,
         answers: [formData.a1, formData.a2, formData.a3],
