@@ -4,18 +4,22 @@ import { useUser } from "@clerk/clerk-react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 
 function AdminMainLayout() {
-  const { user, isLoaded } = useUser();
+  const { user, isLoaded, isSignedIn } = useUser();
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    if (isLoaded) {
-      if (user?.publicMetadata.role != "admin") {
-        navigate("/sign-in");
-      }
+    if (!isLoaded) {
+      return;
     }
-  }, [isLoaded, user, navigate]);
 
-  if (!isLoaded) return null;
+    if (!isSignedIn) {
+      return;
+    }
+
+    if (user?.publicMetadata?.role != "admin") {
+      return navigate("/");
+    }
+  }, [isLoaded, isSignedIn, user, navigate]);
 
   return (
     <div>

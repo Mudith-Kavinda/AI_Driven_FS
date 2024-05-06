@@ -6,12 +6,12 @@ import AuthorizationMiddleware from "./middleware/authorization-middleware";
 const jobsRouter = express.Router();
 
 jobsRouter.route("/")
-.get(getJobs)
-.post(ClerkExpressRequireAuth({}), createJob);
+  .get(getJobs)
+  .post(ClerkExpressRequireAuth({}), createJob);
 
 jobsRouter.route("/:id")
-.get(ClerkExpressRequireAuth({}),getJobById)
-.put(ClerkExpressRequireAuth({}), AuthorizationMiddleware,updateJob)
-.delete(ClerkExpressRequireAuth({}), AuthorizationMiddleware,deleteOneJob);
+  .get(ClerkExpressRequireAuth({}), getJobById)
+  .put(ClerkExpressRequireAuth({}), AuthorizationMiddleware, updateJob)
+  .delete(ClerkExpressRequireAuth({}), AuthorizationMiddleware, deleteOneJob);
 
 export default jobsRouter;

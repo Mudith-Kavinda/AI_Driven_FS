@@ -5,61 +5,46 @@ import { useParams } from "react-router-dom";
 import React from "react";
 import { Job } from "@/types/job";
 import { JobApplication } from "@/types/jobApplication";
+import { getJobById } from "@/lib/services/api/jobs";
+import { getJobApplicationsForJob } from "@/lib/services/api/jobApplications";
 
 function JobPage() {
-  const { id } = useParams();
   const [job, setJob] = React.useState<Job | null>(null);
+  const [isJobLoading, setIsJobLoading] = React.useState(true);
   const [jobApplications, setJobApplications] = React.useState<
-    JobApplication[]
+    Array<JobApplication>
   >([]);
-  const [isloadingJob, setIsloadingJob] = React.useState(true);
-  const [isloadingJobApplication, setIsloadingJobApplication] =
+  const [isJobApplicationsLoading, setIsJobApplicationsLoading] =
     React.useState(true);
+  const { id } = useParams();
 
   React.useEffect(() => {
     if (!id) {
       return;
     }
 
-    const getJobById = async () => {
-      const res = await fetch(`http://localhost:8000/jobs/${id}`, {
-        method: "GET",
-      });
-      const data: Job = await res.json();
-      return data;
-    };
-
-    const getApplicationForJob = async (id: String) => {
-      const res = await fetch(
-        `http://localhost:8000/jobApplications?jobId=${id}`,
-        {
-          method: "GET",
-        }
-      );
-      const data: JobApplication[] = await res.json();
-      return data;
-    };
-
-    getJobById()
+    getJobById(id)
       .then((data) => {
-        setJob(data);
-        setIsloadingJob(false);
+        setJob(data as Job);
+        setIsJobLoading(false);
       })
       .catch((err) => {
         console.log(err);
+        setIsJobLoading(false);
       });
 
-    getApplicationForJob(id)
+    getJobApplicationsForJob(id)
       .then((data) => {
         setJobApplications(data);
-        setIsloadingJobApplication(false);
+        setIsJobApplicationsLoading(false);
       })
       .catch((err) => {
         console.log(err);
+        setIsJobApplicationsLoading(false);
       });
   }, [id]);
 
-  if (isloadingJob || isloadingJobApplication) {
+  if (isJobLoading || isJobApplicationsLoading) {
     return null;
   }
 

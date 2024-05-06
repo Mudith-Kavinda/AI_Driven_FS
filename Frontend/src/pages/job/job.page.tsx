@@ -1,5 +1,5 @@
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
@@ -7,16 +7,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Briefcase, MapPin } from "lucide-react";
 import { Job } from "@/types/job";
 import { useUser } from "@clerk/clerk-react";
+import { getJobById } from "@/lib/services/api/jobs";
+import { createJobApplication } from "@/lib/services/api/jobApplications";
 
 function JobPage() {
   const [job, setJob] = React.useState<Job | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
 
-  const user = useUser();
-  console.log(user);
+  const { user, isLoaded, isSignedIn } = useUser();
+  const navigate = useNavigate();
 
   const { id } = useParams(); //Gives us the value of the route param.
-  //console.log(id);
 
   const [formData, setFormData] = React.useState({
     fullName: "",
@@ -26,18 +27,20 @@ function JobPage() {
   });
 
   React.useEffect(() => {
-    const fetchJob = async () => {
-      const res = await fetch(`http://localhost:8000/jobs/${id}`, {
-        method: "GET",
-      });
-      const data: Job = await res.json();
-      return data;
-    };
-    fetchJob().then((data) => {
+    if (!isLoaded) {
+      return;
+    }
+
+    if (!isSignedIn) {
+      return navigate("/sign-in");
+    }
+
+    if (!id) return;
+    getJobById(id).then((data) => {
       setJob(data);
       setIsLoading(false);
     });
-  }, [id]);
+  }, [id, isLoaded, isSignedIn, navigate]);
 
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -49,26 +52,21 @@ function JobPage() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log(formData);
-    const res = await fetch("http://localhost:8000/jobApplications", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        userId: user.user?.id,
-        fullName: formData.fullName,
-        job: id,
-        answers: [formData.a1, formData.a2, formData.a3],
-      }),
+    if (!user) return;
+    if (!id) return;
+
+    await createJobApplication({
+      userId: user.id,
+      fullName: formData.fullName,
+      job: id,
+      answers: [formData.a1, formData.a2, formData.a3],
     });
-    console.log(res);
   };
 
   if (isLoading || job === null) {
     return (
       <div>
-        <h1>Loading...</h1>
+        <h2>Loading...</h2>
       </div>
     );
   }

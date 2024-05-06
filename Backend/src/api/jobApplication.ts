@@ -1,5 +1,6 @@
 import express from "express";
 import { ClerkExpressRequireAuth } from '@clerk/clerk-sdk-node';
+import "dotenv/config";
 import { createJobApplicaton, getJobApplications, getJobApplicationsById } from "../application/features/jobApplication";
 import AuthorizationMiddleware from "./middleware/authorization-middleware";
 
