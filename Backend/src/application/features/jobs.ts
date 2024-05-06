@@ -16,7 +16,6 @@ export const createJob = async (req : Request, res : Response, next:NextFunction
         const job = req.body;
         console.log(job);
         await Job.create(job);
-
         return res.status(201).send();
     } catch (error) {
         next(error);
@@ -39,7 +38,6 @@ export const updateJob = async (req : Request, res : Response, next:NextFunction
     try {
         const id = req.params.id;
         const job = await Job.findByIdAndUpdate(id, req.body)
-
         return res.status(200).send();
     } catch (error) {
         next(error);
