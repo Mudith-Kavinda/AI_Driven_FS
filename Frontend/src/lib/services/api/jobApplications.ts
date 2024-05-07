@@ -1,10 +1,11 @@
 import { JobApplication } from "@/types/jobApplication";
+import { useAuth } from "@clerk/clerk-react";
 
-export const getJobApplicationsForJob = async (id: string) => {
-  const token = await window.Clerk.session.getToken();
+export const getJobApplicationsForJob = async (id: string | null | undefined, token : string | null | undefined) => {
+  // const { getToken } = useAuth();
 
   const res = await fetch(
-    `https://aidf-back-end-production.up.railway.app/jobApplications?jobId=${id}`,
+    `http://localhost:8000/jobApplications?jobId=${id}`,
     {
       method: "GET",
       headers: {
@@ -17,14 +18,14 @@ export const getJobApplicationsForJob = async (id: string) => {
 };
 
 export const getJobApplicationById = async (id: string) => {
-  const token = await window.Clerk.session.getToken();
+  const { getToken } = useAuth();
 
   const res = await fetch(
     `http://localhost:8000/jobApplications/${id}`,
     {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${await getToken()}`,
       },
     }
   );
@@ -43,7 +44,7 @@ export const createJobApplication = async ({
   job: string;
   answers: string[];
 }) => {
-  const token = await window.Clerk.session.getToken();
+  const { getToken } = useAuth();  
 
   await fetch(
     "http://localhost:8000/jobApplications/",
@@ -51,7 +52,7 @@ export const createJobApplication = async ({
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${await getToken()}`,
       },
       body: JSON.stringify({
         userId: userId,

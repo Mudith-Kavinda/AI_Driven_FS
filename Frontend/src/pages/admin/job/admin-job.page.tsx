@@ -7,6 +7,7 @@ import { Job } from "@/types/job";
 import { JobApplication } from "@/types/jobApplication";
 import { getJobById } from "@/lib/services/api/jobs";
 import { getJobApplicationsForJob } from "@/lib/services/api/jobApplications";
+import { useAuth } from "@clerk/clerk-react";
 
 function JobPage() {
   const [job, setJob] = React.useState<Job | null>(null);
@@ -17,32 +18,31 @@ function JobPage() {
   const [isJobApplicationsLoading, setIsJobApplicationsLoading] =
     React.useState(true);
   const { id } = useParams();
+  const auth = useAuth();
 
   React.useEffect(() => {
     if (!id) {
       return;
     }
-
-    getJobById(id)
-      .then((data) => {
+    async function fetchData() {
+      try {
+        const token = await auth.getToken();
+        const data = await getJobById(id, token);
         setJob(data as Job);
         setIsJobLoading(false);
-      })
-      .catch((err) => {
-        console.log(err);
-        setIsJobLoading(false);
-      });
 
-    getJobApplicationsForJob(id)
-      .then((data) => {
-        setJobApplications(data);
+        const jobApplicationsData = await getJobApplicationsForJob(id, token);
+        setJobApplications(jobApplicationsData);
         setIsJobApplicationsLoading(false);
-      })
-      .catch((err) => {
-        console.log(err);
+      } catch (error) {
+        console.log(error);
+        setIsJobLoading(false);
         setIsJobApplicationsLoading(false);
-      });
-  }, [id]);
+      }
+    }
+
+    fetchData();
+  }, [id, auth]);
 
   if (isJobLoading || isJobApplicationsLoading) {
     return null;

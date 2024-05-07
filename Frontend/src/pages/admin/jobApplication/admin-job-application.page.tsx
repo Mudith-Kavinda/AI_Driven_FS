@@ -5,32 +5,20 @@ import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Link, useParams } from "react-router-dom";
 import { JobApplication } from "@/types/jobApplication";
+import { getJobApplicationById } from "@/lib/services/api/jobApplications";
 
 function AdminJobApplicationPage() {
-  const { id, applicationId } = useParams();
-  console.log(id);
   const [jobApplication, setJobApplication] =
     React.useState<JobApplication | null>(null);
+
   const [isLoading, setIsLoading] = React.useState(true);
+  const { applicationId } = useParams();
 
   React.useEffect(() => {
-    if (!id) {
-      return;
-    }
-
-    const fetchData = async () => {
-      const res = await fetch(
-        `http://localhost:8000/jobApplications/${applicationId}`,
-        {
-          method: "GET",
-        }
-      );
-      const data: JobApplication = await res.json();
-      return data;
-    };
-    fetchData()
+    if (!applicationId) return;
+    getJobApplicationById(applicationId)
       .then((data) => {
-        setJobApplication(data);
+        setJobApplication(data as JobApplication);
         setIsLoading(false);
       })
       .catch((err) => {
@@ -39,8 +27,12 @@ function AdminJobApplicationPage() {
       });
   }, [applicationId]);
 
-  if (isLoading || jobApplication === null) {
-    return null;
+  if (isLoading) {
+    return (
+      <div>
+        <h2>Loading...</h2>
+      </div>
+    );
   }
 
   return (
