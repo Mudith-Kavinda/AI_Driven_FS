@@ -19,6 +19,7 @@ export const getJobApplications = async (req:Request, res:Response, next:NextFun
             const jobApplications = await JobApplication.find()
             .populate("job")
             .exec();
+            // console.log(req)
             return res.status(200).json(jobApplications);
         }
         const jobApplications = await JobApplication.find({ job: jobId });
@@ -32,6 +33,7 @@ export const getJobApplicationsById = async (req:Request, res:Response, next:Nex
     try {
         const { id } = req.params;
         const jobApplication = await JobApplication.findById(id);
+        console.log(req)
         if (jobApplication === null) {
             throw new NotFoundError("Job Application not found");
         }

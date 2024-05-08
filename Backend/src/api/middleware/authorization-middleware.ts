@@ -1,5 +1,6 @@
 import ForbiddenError from "../../domain/errors/forbidden-error";
 import { NextFunction, Request, Response } from "express";
+import { sessions } from "@clerk/clerk-sdk-node";
 
 const AuthorizationMiddleware = (
   req: Request,
@@ -7,7 +8,7 @@ const AuthorizationMiddleware = (
   next: NextFunction
 ) => {
   // @ts-ignore
-  if (req.auth.claims.metadata.role !== "admin") {
+  if (sessions.publicMetadata.role !== "admin") {
     throw new ForbiddenError("Admin only route");
   }
   next();

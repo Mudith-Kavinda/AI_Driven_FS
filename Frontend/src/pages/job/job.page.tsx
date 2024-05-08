@@ -9,6 +9,7 @@ import { Job } from "@/types/job";
 import { useUser } from "@clerk/clerk-react";
 import { getJobById } from "@/lib/services/api/jobs";
 import { createJobApplication } from "@/lib/services/api/jobApplications";
+import { useAuth } from "@clerk/clerk-react";
 
 function JobPage() {
   const [job, setJob] = React.useState<Job | null>(null);
@@ -18,6 +19,7 @@ function JobPage() {
   const navigate = useNavigate();
 
   const { id } = useParams(); //Gives us the value of the route param.
+  const auth = useAuth();
 
   const [formData, setFormData] = React.useState({
     fullName: "",
@@ -36,10 +38,22 @@ function JobPage() {
     }
 
     if (!id) return;
-    getJobById(id).then((data) => {
-      setJob(data);
-      setIsLoading(false);
-    });
+
+    async function fetchData() {
+      try {
+        const token = await auth.getToken();
+        const data = await getJobById(id, token);
+        setJob(data as Job);
+        setIsLoading(false);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    // getJobById(id).then((data) => {
+    //   setJob(data);
+    //   setIsLoading(false);
+    // });
+    fetchData();
   }, [id, isLoaded, isSignedIn, navigate]);
 
   const handleChange = (
@@ -54,13 +68,16 @@ function JobPage() {
     event.preventDefault();
     if (!user) return;
     if (!id) return;
-
-    await createJobApplication({
-      userId: user.id,
-      fullName: formData.fullName,
-      job: id,
-      answers: [formData.a1, formData.a2, formData.a3],
-    });
+    const token = await auth.getToken();
+    await createJobApplication(
+      {
+        userId: user.id,
+        fullName: formData.fullName,
+        job: id,
+        answers: [formData.a1, formData.a2, formData.a3],
+      },
+      token
+    );
   };
 
   if (isLoading || job === null) {

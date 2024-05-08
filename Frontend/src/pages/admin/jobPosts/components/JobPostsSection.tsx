@@ -1,20 +1,21 @@
 import React from "react";
 import JobCard from "@/components/shared/JobCard";
 import { Job } from "@/types/job";
+import { getJobs } from "@/lib/services/api/jobs";
 
 function JobPostsSection() {
   const [jobs, setJobs] = React.useState<Job[]>([]);
 
   React.useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch("http://localhost:8000/jobs", { method: "GET" });
-      const data: Job[] = await res.json();
-      console.log(data);
-      return data;
-    };
-    fetchData()
-      .then((data) => setJobs(data as Job[]))
-      .catch((err) => console.log(err));
+    async function fetchData() {
+      try {
+        const data = await getJobs();
+        setJobs(data as Job[]);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchData();
   }, []);
 
   return (

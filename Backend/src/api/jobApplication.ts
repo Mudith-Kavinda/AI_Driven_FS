@@ -8,9 +8,9 @@ const jobApplicationRouter = express.Router();
 
 jobApplicationRouter.route("/")
 .get(ClerkExpressRequireAuth({}),getJobApplications)
-.post(ClerkExpressRequireAuth({}), AuthorizationMiddleware,createJobApplicaton);
+.post(ClerkExpressRequireAuth({}), createJobApplicaton);
 
 jobApplicationRouter.route("/:id")
-.get(ClerkExpressRequireAuth({}), AuthorizationMiddleware, getJobApplicationsById);
+.get(ClerkExpressRequireAuth({}),  getJobApplicationsById);
 
 export default jobApplicationRouter;

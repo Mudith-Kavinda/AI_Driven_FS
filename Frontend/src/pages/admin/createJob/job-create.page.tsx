@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { createJob } from "@/lib/services/api/jobs";
 import React, { ChangeEvent, FormEvent } from "react";
+import { useAuth, useSession } from "@clerk/clerk-react";
 
 function JobCreatePage() {
   const [formData, setFormData] = React.useState({
@@ -15,6 +16,9 @@ function JobCreatePage() {
     q3: "",
   });
 
+  const Auth = useAuth();
+  const session = useSession();
+
   const handleChange = (
     e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
   ) => {
@@ -23,14 +27,23 @@ function JobCreatePage() {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const token = await Auth.getToken();
 
-    await createJob({
-      title: formData.title,
-      type: formData.type,
-      description: formData.description,
-      location: formData.location,
-      questions: [formData.q1, formData.q2, formData.q3],
-    });
+    const role = session?.session?.user.publicMetadata.role;
+    if (role !== "admin") {
+      return;
+    }
+
+    await createJob(
+      {
+        title: formData.title,
+        type: formData.type,
+        description: formData.description,
+        location: formData.location,
+        questions: [formData.q1, formData.q2, formData.q3],
+      },
+      token
+    );
   };
 
   return (
@@ -86,9 +99,7 @@ function JobCreatePage() {
             name={"q1"}
             value={formData.q1}
             onChange={handleChange}
-            defaultValue={
-              "Share your academic background and highlight key programming concepts you've mastered. How has your education shaped your current tech skill set?"
-            }
+            required
           />
         </div>
         <div className="mt-4">
@@ -98,9 +109,7 @@ function JobCreatePage() {
             name={"q2"}
             value={formData.q2}
             onChange={handleChange}
-            defaultValue={
-              "Describe your professional development, emphasizing any certifications obtained. How have these certifications enriched your technical abilities, and can you provide an example of their practical application?"
-            }
+            required
           />
         </div>
         <div className="mt-4">
@@ -110,9 +119,7 @@ function JobCreatePage() {
             name={"q3"}
             value={formData.q3}
             onChange={handleChange}
-            defaultValue={
-              "Discuss notable projects in your programming experience. What challenges did you face, and how did you apply your skills to overcome them? Highlight the technologies used and the impact of these projects on your overall growth as a prefessional?"
-            }
+            required
           />
         </div>
 

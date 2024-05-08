@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { Link, useParams } from "react-router-dom";
 import { JobApplication } from "@/types/jobApplication";
 import { getJobApplicationById } from "@/lib/services/api/jobApplications";
+import { useAuth, useSession } from "@clerk/clerk-react";
 
 function AdminJobApplicationPage() {
   const [jobApplication, setJobApplication] =
@@ -14,17 +15,28 @@ function AdminJobApplicationPage() {
   const [isLoading, setIsLoading] = React.useState(true);
   const { applicationId } = useParams();
 
+  const Auth = useAuth();
+  const session = useSession();
+
   React.useEffect(() => {
     if (!applicationId) return;
-    getJobApplicationById(applicationId)
-      .then((data) => {
+    const role = session?.session?.user.publicMetadata.role;
+    if (role !== "admin") {
+      return;
+    }
+
+    async function fetchData() {
+      try {
+        const token = await Auth.getToken();
+        const data = await getJobApplicationById(applicationId, token);
         setJobApplication(data as JobApplication);
         setIsLoading(false);
-      })
-      .catch((err) => {
-        console.log(err);
+      } catch (error) {
+        console.log(error);
         setIsLoading(false);
-      });
+      }
+    }
+    fetchData();
   }, [applicationId]);
 
   if (isLoading) {
@@ -56,7 +68,7 @@ function AdminJobApplicationPage() {
       </Card>
 
       <Card className="p-4">
-        {jobApplication!.answers.map((answer, i) => {
+        {jobApplication!.answers?.map((answer, i) => {
           return <p key={i}>{answer}</p>;
         })}
       </Card>

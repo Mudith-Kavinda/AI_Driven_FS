@@ -7,7 +7,7 @@ import { Job } from "@/types/job";
 import { JobApplication } from "@/types/jobApplication";
 import { getJobById } from "@/lib/services/api/jobs";
 import { getJobApplicationsForJob } from "@/lib/services/api/jobApplications";
-import { useAuth } from "@clerk/clerk-react";
+import { useAuth, useSession } from "@clerk/clerk-react";
 
 function JobPage() {
   const [job, setJob] = React.useState<Job | null>(null);
@@ -19,9 +19,15 @@ function JobPage() {
     React.useState(true);
   const { id } = useParams();
   const auth = useAuth();
+  const session = useSession();
 
   React.useEffect(() => {
+    const role = session?.session?.user.publicMetadata.role;
     if (!id) {
+      return;
+    }
+
+    if (role !== "admin") {
       return;
     }
     async function fetchData() {

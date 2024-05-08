@@ -1,5 +1,4 @@
 import { Job } from "@/types/job";
-import { useAuth } from "@clerk/clerk-react";
 
 export const getJobs = async () => {
   const res = await fetch(
@@ -40,14 +39,14 @@ export const createJob = async ({
   type: string;
   location: string;
   questions: string[];
-}) => {
-  const { getToken } = useAuth();
+}, token : string | null | undefined) => {
+  // const { getToken } = useAuth();
 
   await fetch("http://localhost:8000/jobs", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${await getToken()}`,
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({
       title,
