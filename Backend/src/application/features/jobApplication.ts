@@ -1,11 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 import JobApplication from "../../persistence/entities/JobApplication";
 import NotFoundError from "../../domain/errors/not-found-error";
+import { generateRating } from "./rating";
 
 export const createJobApplicaton = async (req:Request, res:Response, next:NextFunction) => {
     try {
         const jobApplication = req.body;
-        await JobApplication.create(jobApplication);
+        const createdJobApplication = await JobApplication.create(jobApplication);
+        generateRating(createdJobApplication._id)
         return res.status(201).send();
     } catch (error) {
         next(error);
@@ -33,7 +35,7 @@ export const getJobApplicationsById = async (req:Request, res:Response, next:Nex
     try {
         const { id } = req.params;
         const jobApplication = await JobApplication.findById(id);
-        console.log(req)
+        // console.log(req)
         if (jobApplication === null) {
             throw new NotFoundError("Job Application not found");
         }
