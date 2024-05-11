@@ -16,7 +16,7 @@ function Navigation() {
 
           <div className="flex gap-x-4 items-center">
             <SignedIn>
-              <UserButton afterSignOutUrl="/home" />
+              <UserButton afterSignOutUrl="/" />
             </SignedIn>
             <SignedOut>
               <Link to={"/sign-in"}>Sign In</Link>
