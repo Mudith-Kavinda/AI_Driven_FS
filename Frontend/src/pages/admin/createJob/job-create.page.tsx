@@ -4,6 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { createJob } from "@/lib/services/api/jobs";
 import React, { ChangeEvent, FormEvent } from "react";
 import { useAuth, useSession } from "@clerk/clerk-react";
+import { useNavigate } from "react-router-dom";
 
 function JobCreatePage() {
   const [formData, setFormData] = React.useState({
@@ -18,6 +19,7 @@ function JobCreatePage() {
 
   const Auth = useAuth();
   const session = useSession();
+  const navigate = useNavigate();
 
   const handleChange = (
     e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
@@ -44,6 +46,7 @@ function JobCreatePage() {
       },
       token
     );
+    navigate("/admin/jobs");
   };
 
   return (

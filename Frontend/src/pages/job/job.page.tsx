@@ -78,6 +78,7 @@ function JobPage() {
       },
       token
     );
+    navigate("/home");
   };
 
   if (isLoading || job === null) {
