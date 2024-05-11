@@ -6,7 +6,7 @@ import jobApplicationRouter from "./api/jobApplication";
 import { connectDB } from "./persistence/db";
 import GlobalErrorHandlerMiddleware from "./api/middleware/global-error-handling-middleware";
 
-const port = 8000;
+const port = process.env.PORT || 8000;
 const app = express();
 connectDB();
 
